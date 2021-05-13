@@ -282,6 +282,7 @@ public class FlutterJNI {
 
   @NonNull private final Looper mainLooper; // cached to avoid synchronization on repeat access.
 
+  // Prefer using the FlutterJNI.Factory so it's easier to test.
   public FlutterJNI() {
     // We cache the main looper so that we can ensure calls are made on the main thread
     // without consistently paying the synchronization cost of getMainLooper().
@@ -901,8 +902,11 @@ public class FlutterJNI {
   // TODO(mattcarroll): differentiate between channel responses and platform responses.
   @UiThread
   public void invokePlatformMessageResponseCallback(
-      int responseId, @Nullable ByteBuffer message, int position) {
+      int responseId, @NonNull ByteBuffer message, int position) {
     ensureRunningOnMainThread();
+    if (!message.isDirect()) {
+      throw new IllegalArgumentException("Expected a direct ByteBuffer.");
+    }
     if (isAttached()) {
       nativeInvokePlatformMessageResponseCallback(
           nativeShellHolderId, responseId, message, position);
@@ -1257,5 +1261,16 @@ public class FlutterJNI {
 
   public interface AsyncWaitForVsyncDelegate {
     void asyncWaitForVsync(final long cookie);
+  }
+
+  /**
+   * A factory for creating {@code FlutterJNI} instances. Useful for FlutterJNI injections during
+   * tests.
+   */
+  public static class Factory {
+    /** @return a {@link FlutterJNI} instance. */
+    public FlutterJNI provideFlutterJNI() {
+      return new FlutterJNI();
+    }
   }
 }

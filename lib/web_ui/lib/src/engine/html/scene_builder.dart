@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
 part of engine;
 
 class SurfaceSceneBuilder implements ui.SceneBuilder {
@@ -360,11 +359,12 @@ class SurfaceSceneBuilder implements ui.SceneBuilder {
   ///
   /// The picture is rasterized at the given offset.
   @override
-  void addPicture(
+  ui.PictureEngineLayer addPicture(
     ui.Offset offset,
     ui.Picture picture, {
     bool isComplexHint = false,
     bool willChangeHint = false,
+    ui.PictureEngineLayer? oldLayer,
   }) {
     int hints = 0;
     if (isComplexHint) {
@@ -373,8 +373,14 @@ class SurfaceSceneBuilder implements ui.SceneBuilder {
     if (willChangeHint) {
       hints |= 2;
     }
-    _addSurface(PersistedPicture(
-        offset.dx, offset.dy, picture as EnginePicture, hints));
+    final PersistedPicture layer = PersistedPicture(
+      offset.dx,
+      offset.dy,
+      picture as EnginePicture,
+      hints,
+    );
+    _addSurface(layer);
+    return layer;
   }
 
   /// Adds a backend texture to the scene.
@@ -526,7 +532,7 @@ class SurfaceSceneBuilder implements ui.SceneBuilder {
   static void debugForgetFrameScene() {
     _lastFrameScene?.rootElement?.remove();
     _lastFrameScene = null;
-    _clipIdCounter = 0;
+    resetSvgClipIds();
     _recycledCanvases.clear();
   }
 

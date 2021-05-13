@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
-part of engine;
+import 'dart:html' as html;
+
+import 'package:meta/meta.dart';
 
 /// The HTML engine used by the current browser.
 enum BrowserEngine {
@@ -130,7 +131,7 @@ enum OperatingSystem {
 }
 
 /// Lazily initialized current operating system.
-late final OperatingSystem _operatingSystem = _detectOperatingSystem();
+late final OperatingSystem _operatingSystem = detectOperatingSystem();
 
 /// Returns the [OperatingSystem] the current browsers works on.
 ///
@@ -148,11 +149,23 @@ OperatingSystem get operatingSystem {
 /// This is intended to be used for testing and debugging only.
 OperatingSystem? debugOperatingSystemOverride;
 
-OperatingSystem _detectOperatingSystem() {
-  final String platform = html.window.navigator.platform!;
-  final String userAgent = html.window.navigator.userAgent;
+@visibleForTesting
+OperatingSystem detectOperatingSystem({
+  String? overridePlatform,
+  String? overrideUserAgent,
+  int? overrideMaxTouchPoints,
+}) {
+  final String platform = overridePlatform ?? html.window.navigator.platform!;
+  final String userAgent = overrideUserAgent ?? html.window.navigator.userAgent;
 
   if (platform.startsWith('Mac')) {
+    // iDevices requesting a "desktop site" spoof their UA so it looks like a Mac.
+    // This checks if we're in a touch device, or on a real mac.
+    final int maxTouchPoints =
+        overrideMaxTouchPoints ?? html.window.navigator.maxTouchPoints ?? 0;
+    if (maxTouchPoints > 2) {
+      return OperatingSystem.iOs;
+    }
     return OperatingSystem.macOs;
   } else if (platform.toLowerCase().contains('iphone') ||
       platform.toLowerCase().contains('ipad') ||

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
 part of engine;
 
 // TODO(yjbanov): this is currently very naive. We probably want to cache
@@ -79,7 +78,7 @@ void _recycleCanvas(EngineCanvas? canvas) {
 
 /// A surface that uses a combination of `<canvas>`, `<div>` and `<p>` elements
 /// to draw shapes and text.
-class PersistedPicture extends PersistedLeafSurface {
+class PersistedPicture extends PersistedLeafSurface implements ui.PictureEngineLayer {
   PersistedPicture(this.dx, this.dy, this.picture, this.hints)
       : localPaintBounds = picture.recordingCanvas!.pictureBounds;
 

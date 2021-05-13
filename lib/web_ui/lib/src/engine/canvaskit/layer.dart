@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
 part of engine;
 
 /// A layer to be composed into a scene.
@@ -412,7 +411,7 @@ class ShaderMaskEngineLayer extends ContainerLayer implements ui.ShaderMaskEngin
 }
 
 /// A layer containing a [Picture].
-class PictureLayer extends Layer {
+class PictureLayer extends Layer implements ui.PictureEngineLayer {
   /// The picture to paint into the canvas.
   final CkPicture picture;
 

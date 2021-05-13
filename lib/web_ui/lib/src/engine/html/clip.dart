@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
 part of engine;
 
 /// Mixin used by surfaces that clip their contents using an overflowing DOM
@@ -327,12 +326,12 @@ class PersistedPhysicalShape extends PersistedContainerSurface
     /// to clipping rect bounds (which is the case for elevation == 0.0 where
     /// we shift outer/inner clip area instead to position clip-path).
     final String svgClipPath = elevation == 0.0
-        ? _pathToSvgClipPath(path,
+        ? pathToSvgClipPath(path,
             offsetX: -pathBounds.left,
             offsetY: -pathBounds.top,
             scaleX: 1.0 / pathBounds.width,
             scaleY: 1.0 / pathBounds.height)
-        : _pathToSvgClipPath(path,
+        : pathToSvgClipPath(path,
             offsetX: 0.0,
             offsetY: 0.0,
             scaleX: 1.0 / pathBounds.right,
@@ -346,7 +345,7 @@ class PersistedPhysicalShape extends PersistedContainerSurface
         html.Element.html(svgClipPath, treeSanitizer: _NullTreeSanitizer());
     domRenderer.append(rootElement!, _clipElement!);
     if (elevation == 0.0) {
-      DomRenderer.setClipPath(rootElement!, 'url(#svgClip$_clipIdCounter)');
+      DomRenderer.setClipPath(rootElement!, createSvgClipUrl());
       final html.CssStyleDeclaration rootElementStyle = rootElement!.style;
       rootElementStyle
         ..overflow = ''
@@ -361,7 +360,7 @@ class PersistedPhysicalShape extends PersistedContainerSurface
       return;
     }
 
-    DomRenderer.setClipPath(childContainer!, 'url(#svgClip$_clipIdCounter)');
+    DomRenderer.setClipPath(childContainer!, createSvgClipUrl());
     final html.CssStyleDeclaration rootElementStyle = rootElement!.style;
     rootElementStyle
       ..overflow = ''
@@ -501,9 +500,9 @@ class PersistedClipPath extends PersistedContainerSurface
 /// Creates an svg clipPath and applies it to [element].
 String createSvgClipDef(html.HtmlElement element, ui.Path clipPath) {
   final ui.Rect pathBounds = clipPath.getBounds();
-  final String svgClipPath = _pathToSvgClipPath(clipPath,
+  final String svgClipPath = pathToSvgClipPath(clipPath,
       scaleX: 1.0 / pathBounds.right, scaleY: 1.0 / pathBounds.bottom);
-  DomRenderer.setClipPath(element, 'url(#svgClip$_clipIdCounter)');
+  DomRenderer.setClipPath(element, createSvgClipUrl());
   // We need to set width and height for the clipElement to cover the
   // bounds of the path since browsers such as Safari and Edge
   // seem to incorrectly intersect the element bounding rect with

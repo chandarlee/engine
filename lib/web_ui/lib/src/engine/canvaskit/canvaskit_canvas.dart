@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.12
 part of engine;
 
 /// An implementation of [ui.Canvas] that is backed by a CanvasKit canvas.
@@ -136,8 +135,8 @@ class CanvasKitCanvas implements ui.Canvas {
 
   @override
   void drawLine(ui.Offset p1, ui.Offset p2, ui.Paint paint) {
-    assert(_offsetIsValid(p1));
-    assert(_offsetIsValid(p2));
+    assert(offsetIsValid(p1));
+    assert(offsetIsValid(p2));
     assert(paint != null); // ignore: unnecessary_null_comparison
     _drawLine(p1, p2, paint);
   }
@@ -203,7 +202,7 @@ class CanvasKitCanvas implements ui.Canvas {
 
   @override
   void drawCircle(ui.Offset c, double radius, ui.Paint paint) {
-    assert(_offsetIsValid(c));
+    assert(offsetIsValid(c));
     assert(paint != null); // ignore: unnecessary_null_comparison
     _drawCircle(c, radius, paint);
   }
@@ -237,7 +236,7 @@ class CanvasKitCanvas implements ui.Canvas {
   void drawImage(ui.Image image, ui.Offset p, ui.Paint paint) {
     // ignore: unnecessary_null_comparison
     assert(image != null); // image is checked on the engine side
-    assert(_offsetIsValid(p));
+    assert(offsetIsValid(p));
     assert(paint != null); // ignore: unnecessary_null_comparison
     _canvas.drawImage(image as CkImage, p, paint as CkPaint);
   }
@@ -273,7 +272,7 @@ class CanvasKitCanvas implements ui.Canvas {
   @override
   void drawParagraph(ui.Paragraph paragraph, ui.Offset offset) {
     assert(paragraph != null); // ignore: unnecessary_null_comparison
-    assert(_offsetIsValid(offset));
+    assert(offsetIsValid(offset));
     _drawParagraph(paragraph, offset);
   }
 
